@@ -1,172 +1,229 @@
 # 📝 TaskMate (مهامي) — Modern React & Material UI Todo Application
 
-A feature-packed, RTL-compatible Task Management web application built with **React**, **Material UI (MUI v6)**, and **Context API**. The project focuses on clean architecture, modular component structure, and persistent storage synchronization.
+### A feature-rich, RTL-friendly task manager for Arabic-speaking users
+
+TaskMate is a task management web application built with **React**, **Material UI (MUI)**, and the **Context API**. It provides a clean Arabic interface for creating, viewing, editing, completing, filtering, and deleting tasks. Task changes are stored locally in the browser.
 
 ---
 
 ## 📑 Table of Contents
 
 - [Overview](#-overview)
+
 - [Key Features](#-key-features)
+
 - [Architecture & State Management](#-architecture--state-management)
+
 - [Tech Stack](#-tech-stack)
+
 - [Project Structure](#-project-structure)
+
 - [Getting Started](#-getting-started)
+
 - [Key Concepts Implemented](#-key-concepts-implemented)
+
 - [Future Enhancements](#-future-enhancements)
+
 - [Author](#-author)
 
 ---
 
 ## 🌟 Overview
 
-**TaskMate** is designed to provide an intuitive task-tracking experience for Arabic (RTL) users. Rather than relying on simple state management or messy prop drilling, the application employs a centralized state architecture using React's **Context API**, alongside **Local Storage** persistence to prevent data loss across page reloads.
+**TaskMate** is designed for Arabic-speaking users who want a simple way to organize everyday tasks. The interface supports **right-to-left (RTL)** layout and uses the locally bundled **Alexandria** font.
 
----
+The application keeps its task list in React state and shares it with child components through the **Context API**. Task changes are saved in the browser's `localStorage` and restored when the app starts.
+
+> **Storage note:** Tasks are stored only in the current browser's local storage. The project does not include a backend, user accounts, or cross-device synchronization. Clearing site data or switching browsers/devices will not transfer saved tasks.
 
 ## 🚀 Key Features
 
-### 1. Complete CRUD Operations
+### 1. Complete Task Management
 
-- **Create (Add Task):** Add new tasks with dynamic validation (submit button disabled until valid non-empty text is entered).
-- **Read (List Tasks):** Dynamically render task lists with individual IDs generated via `uuidv4`.
-- **Update (Edit & Status Toggle):**
-  - **Status Toggle:** Toggle completion status with conditional styling (green indicator, strike-through task title).
-  - **Content Edit:** Modal Dialog interface allowing real-time modification of task titles and descriptions.
-- **Delete (Confirmation Dialog):** Safeguard against accidental data loss with an accessible confirmation dialog modal before permanent removal.
+- **Create:** Add a task with a non-empty title. The Add button stays disabled until the title contains non-whitespace text. New tasks start with empty details and an incomplete status.
 
-### 2. Smart Filtering (Derived State)
+- **Read:** View each task's title, details, and completion status.
 
-- Filter between **All (الكل)**, **Completed (المنجز)**, and **Non-Completed (غير المنجز)** without duplicating arrays or creating state synchronization bugs.
-- Implements the **Single Source of Truth** design pattern.
+- **Update:** Edit a task's title and details in a dialog.
 
-### 3. Data Persistence
+- **Toggle status:** Mark a task complete or incomplete, with visual styling for completed tasks.
 
-- Real-time synchronization between the React State and browser `localStorage`.
-- Safe data retrieval on initial mounting using `useEffect` with zero infinite re-render loops.
+- **Delete:** Confirm before permanently removing a task.
 
-### 4. UI/UX Refinements
+### 2. Smart Filtering
 
-- **Right-to-Left (RTL) Support:** Tailored typography using the modern `Alexandria` Arabic font.
-- **Scroll Containment:** Responsive card layout capped at `80vh` with independent, smooth scrolling (`overflow-y: auto`).
-- **Material UI Theming:** Centralized theme configuration via `ThemeProvider` and customized palette tokens.
+Filter tasks by **All (الكل)**, **Completed (المنجز)**, or **Incomplete (غير المنجز)**. The filtered lists are derived from the shared task array rather than stored as separate state.
 
----
+### 3. Local Data Persistence
+
+The application reads any saved task list from `localStorage` at startup. Adding, editing, completing, or deleting a task updates the saved list. If no task list has been saved, the application displays the sample tasks defined in `App.jsx`.
+
+### 4. UI and RTL Support
+
+- Arabic labels and right-to-left layout.
+
+- Alexandria regular and bold font files included with the project.
+
+- Material UI theme configuration and components.
+
+- Scrollable task area within a card layout capped at `80vh`.
+
+- Grid-based task layout and action buttons for task completion, editing, and deletion.
 
 ## 🧠 Architecture & State Management
 
-The project is structured around clean data flow principles to prevent **Prop Drilling**:
+The task array is created and managed in `App.jsx`. `TodosContext` makes both the array and its updater available to the task list and task-item components.
 
-````text
-               ┌────────────────────────┐
-               │        App.jsx         │
-               │ (Global State Source)  │
-               └───────────┬────────────┘
-                           │
-                 [ TodosContext.Provider ]
-                           │
-               ┌───────────┴────────────┐
-               │      TodoList.jsx      │ ──> useContext(TodosContext)
-               │ (Filters, Add Input)   │
-               └───────────┬────────────┘
-                           │
-               ┌───────────┴────────────┐
-               │        Todo.jsx        │ ──> useContext(TodosContext)
-               │ (Actions & Modals)     │
-               └────────────────────────┘
+```
+                    App.jsx
+          (shared tasks state and provider)
+                       │
+                 TodosContext
+                       │
+             ┌─────────┴─────────┐
+             │                   │
+        TodoList.jsx          Todo.jsx
+    (filters and add)   (edit, complete,
+                             and delete)
+```
 
-* Single Source of Truth: Only one array (todos) lives in the global store. Filtering is computed dynamically on each render rather than stored redundantly.
+- **Single source of truth:** The shared task array lives in `App.jsx`.
 
-* Separation of Concerns: Component structure (JSX) is completely isolated from visual rules (CSS), avoiding inline styling clutter.
+- **Derived filtering:** Completed and incomplete lists are calculated from the shared array.
+
+- **Separation of concerns:** `TodoList.jsx` manages list controls and adding tasks; `Todo.jsx` renders an individual task and its actions. Each component has a dedicated CSS file.
 
 ## 🛠️ Tech Stack
 
-- **Framework:** React.js (Functional Components, Hooks)
-- **UI Library:** Material UI (MUI v6 / Grid v2 with `size` prop)
-- **Icons:** Material Icons (`@mui/icons-material`)
-- **State Management:** React Context API (`useContext`)
-- **Lifecycle Management:** `useEffect` (for initial mount storage retrieval)
-- **Data Persistence:** Web Storage API (`localStorage`)
-- **Unique IDs:** `uuid` (UUIDv4)
-- **Styling:** Custom Modular CSS with CSS Specificity
-- **Bundler / Tooling:** Vite
+The versions below are resolved versions recorded in `package-lock.json` at the time this README was updated. `package.json` may specify compatible version ranges rather than exact versions.
+
+| Area | Technology | Version / Notes |
+| --- | --- | --- |
+| UI framework | React + React DOM | `19.3.0` |
+| Component library | Material UI (`@mui/material`) | `9.5.0` |
+| Icons | Material Icons (`@mui/icons-material`) | `9.5.0` |
+| Layout | Material UI Grid | Uses the `size` prop |
+| Routing | React Router DOM | `7.18.4`; no multiple app routes are currently defined |
+| State management | React Context API | `useContext` |
+| Persistence | Browser `localStorage` | Local to the current browser |
+| Unique IDs | `uuid` | Version `14`, UUID v4 |
+| Styling | CSS + Emotion | — |
+| Build tool | Vite | `8.x` |
 
 ## 📁 Project Structure
 
-```text
-taskmate-todo/
+```
+taskmate-react-todo/
+├── Alexandria/                 # Alexandria font directory
 ├── public/
+│   ├── favicon.svg
+│   ├── icons.svg
+│   └── fonts/
+│       ├── Alexandria-Bold.ttf
+│       └── Alexandria-Regular.ttf
 ├── src/
 │   ├── assets/
 │   ├── Components/
-│   │   ├── Todo.jsx           # Single Todo Card, Modals & Item Actions
-│   │   ├── Todo.css           # Item-level styles & conditional classes
-│   │   ├── TodoList.jsx       # Card Shell, Filter Controls, Add Input
-│   │   └── TodoList.css       # Layout container, Card & Filter styles
+│   │   ├── Todo.jsx            # Individual task card and dialogs
+│   │   ├── Todo.css            # Task card styles
+│   │   ├── TodoList.jsx        # Task list, filters, and add-task form
+│   │   └── TodoList.css        # List and card styles
 │   ├── Contexts/
-│   │   └── TodosContext.jsx   # Shared Context definition
-│   ├── App.jsx                # Root Component, ThemeProvider, Context Provider
-│   ├── App.css                # Base layout & font-family styling
-│   ├── main.jsx               # Application entry point
-│   └── index.html             # Document root & Google Fonts integration
+│   │   └── TempContext.jsx     # Shared task context
+│   ├── App.jsx                 # Root component, theme, and task state
+│   ├── App.css                 # Font setup and application layout
+│   ├── index.css               # Global CSS reset
+│   └── main.jsx                # React entry point
+├── index.html                  # Vite HTML entry point
+├── eslint.config.js
 ├── package.json
-└── README.md
-````
+├── package-lock.json
+└── vite.config.js
+```
 
 ## ⚡ Getting Started
 
 ### Prerequisites
 
-Ensure you have Node.js installed on your machine (version 18+ recommended).
+- **Node.js:** `20.19+` in the 20.x line, or `22.12+` in the 22.x line
 
-### Installation
+- **npm**
 
-Clone the repository:
+Vite 8 requires these Node.js versions; Node.js 18 is not sufficient for this project.
+
+Check the versions installed on your system:
 
 ```bash
-git clone https://github.com/Ali-Tobar/taskmate-react-todo
+node --version
+npm --version
+```
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Ali-Tobar/taskmate-react-todo.git
 cd taskmate-react-todo
 ```
 
-Install dependencies:
+### 2. Install dependencies
+
+Use `npm ci` to install the versions recorded in the lockfile:
 
 ```bash
-npm install
+npm ci
 ```
 
-Start the development server:
+### 3. Start the development server
 
 ```bash
 npm run dev
 ```
 
-Build for production:
+Vite prints the development URL in the terminal. It is usually `http://localhost:5173`.
+
+### 4. Build and preview for production
 
 ```bash
 npm run build
+npm run preview
 ```
 
 ## 🎓 Key Concepts Implemented
 
-- **Controlled Components:** Synchronizing form inputs directly with React State via `value` and `onChange`.
-- **Immutable State Updates:** Using the Spread Operator (`...`) and non-mutating array methods (`map`, `filter`) rather than mutating operations (`push`, `splice`).
-- **Side Effect Handling:** Isolating external storage read operations inside `useEffect(..., [])` to protect against execution loops.
-- **MUI Dialog Lifecycle:** Localized UI state management for managing modal visibility (`open` / `onClose`).
+- **Controlled components:** Task title and edit fields are controlled by React state.
+
+- **Input validation:** The Add button is disabled when the task title is empty or contains only whitespace.
+
+- **Immutable state updates:** Task arrays are updated with methods such as `map` and `filter` rather than direct mutation.
+
+- **Shared state:** `TodosContext` exposes the task array and updater to child components.
+
+- **Derived filtering:** The selected filter determines which tasks are rendered without maintaining duplicate filtered state.
+
+- **Side effects:** `useEffect` reads saved tasks from browser storage when the task list mounts.
+
+- **Persistence:** Task actions write the updated array to `localStorage`.
+
+- **Dialog lifecycle:** Material UI dialogs manage task editing and delete confirmation.
 
 ## 🔮 Future Enhancements
 
-- [ ] Task prioritization (High, Medium, Low flags).
-- [ ] Due date assignment with interactive calendar pickers.
-- [ ] Toast notification snackbars on successful task actions.
-- [ ] Light / Dark mode toggle.
+- Task priorities (High, Medium, Low ).
+
+- Due dates and calendar selection.
+
+- Toast notifications after task actions.
+
+- Light and dark theme toggle.
+
+- Optional backend synchronization for access across devices.
 
 ## 👨‍💻 Author
 
-Ali Mohamed Ali Tobar
+**Ali Mohamed Ali Tobar**
 
-- **GitHub:** @[your-github-username](https://github.com/Ali-Tobar)
-- **LinkedIn:** www.linkedin.com/in/ali-tobar-dev
+- **GitHub:** [@Ali-Tobar](https://github.com/Ali-Tobar)
 
-```
+- **LinkedIn:** [ali-tobar-dev](https://www.linkedin.com/in/ali-tobar-dev)
 
-```
+- **Repository:** [taskmate-react-todo](https://github.com/Ali-Tobar/taskmate-react-todo)
