@@ -1,0 +1,55 @@
+
+
+/* Main White Card Container */
+.todo-card {
+  background-color: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15) !important;
+  padding: 10px;
+  max-height: 80vh !important;  /* Caps card height to 80% of viewport */
+  overflow-y: auto !important;  /* Enables smooth vertical scrolling */
+}
+
+/* Header Title */
+.todo-title {
+  font-weight: 700 !important;
+  text-align: center;
+  color: #1d1d1d;
+  margin-bottom: 15px !important;
+}
+
+/* Filter Buttons Wrapper */
+.filter-buttons-group {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  width: fit-content; 
+  margin: 25px auto 20px !important; 
+  direction: ltr;
+}
+
+/* Inner Container for Todo Items */
+.todos-container {
+  margin-top: 15px;
+}
+
+/* ==========================================================================
+   Add Todo Input & Button Section
+   ========================================================================== */
+
+/* Container Grid for Input and Add Button */
+.add-todo-grid-container {
+  margin-top: 20px !important; /* Space separating tasks from input */
+  align-items: stretch;        /* Ensures input and button have matching height */
+}
+
+/* Full Width Text Field */
+.add-todo-input {
+  width: 100% !important;
+}
+
+/* Add Button Styling */
+.add-todo-btn {
+  width: 100% !important;
+  height: 100% !important; /* Matches TextField height */
+}

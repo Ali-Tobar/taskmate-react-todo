@@ -1,0 +1,92 @@
+/* ==========================================================================
+   Todo Component Styles
+   ========================================================================== */
+
+/* Main Blue Card Item Container */
+.todo-card-item {
+  background-color: #283593 !important; /* Dark blue matching video design */
+  color: #ffffff !important;
+  margin-top: 20px;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Hover Growth Effect on Todo Card */
+.todo-card-item:hover {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Content Column (Title & Description) - Right side in RTL */
+.todo-content-col {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Task Title Typography */
+.todo-title-text {
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+/* Task Details Typography */
+.todo-details-text {
+  opacity: 0.85;
+  color: #ffffff !important;
+}
+
+/* Actions Column Container - Left side in RTL */
+.todo-actions-col {
+  /* display: flex !important;
+  justify-content: space-around !important; /* Distribute the 3 buttons evenly across the 4 columns */
+  /* align-items: center !important; */
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 12px;
+}
+
+/* Base style for all action icon buttons */
+.action-icon-btn {
+  background-color: #ffffff !important;
+  border-width: 3px !important;
+  border-style: solid !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Action button hover effect */
+.action-icon-btn:hover {
+  background-color: #f0f0f0 !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 1. Complete/Check Button Style */
+.check-btn {
+  color: #8bc34a !important; /* Green check icon */
+  border-color: #8bc34a !important; /* Matching green border */
+}
+
+/* Completed State for Check Button */
+.check-btn.completed {
+  background-color: #8bc34a !important;
+  color: #ffffff !important;
+}
+/* 2. Edit Button Style */
+.edit-btn {
+  color: #1769aa !important; /* Blue edit icon */
+  border-color: #1769aa !important; /* Matching blue border */
+}
+
+/* 3. Delete Button Style */
+.delete-btn {
+  color: #b23c17 !important; /* Red delete icon */
+  border-color: #b23c17 !important; /* Matching red border */
+}
+/* Strikethrough style for completed task title */
+.todo-title-text.completed {
+  text-decoration: line-through !important;
+  opacity: 0.7;
+}
