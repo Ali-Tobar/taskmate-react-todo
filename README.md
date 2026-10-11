@@ -97,18 +97,18 @@ The task array is created and managed in `App.jsx`. `TodosContext` makes both th
 
 The versions below are resolved versions recorded in `package-lock.json` at the time this README was updated. `package.json` may specify compatible version ranges rather than exact versions.
 
+
 | Area | Technology | Version / Notes |
 | --- | --- | --- |
-| UI framework | React + React DOM | `19.3.0` |
-| Component library | Material UI (`@mui/material`) | `9.5.0` |
-| Icons | Material Icons (`@mui/icons-material`) | `9.5.0` |
-| Layout | Material UI Grid | Uses the `size` prop |
-| Routing | React Router DOM | `7.18.4`; no multiple app routes are currently defined |
-| State management | React Context API | `useContext` |
-| Persistence | Browser `localStorage` | Local to the current browser |
-| Unique IDs | `uuid` | Version `14`, UUID v4 |
-| Styling | CSS + Emotion | — |
-| Build tool | Vite | `8.x` |
+| UI Framework | React + React DOM | `18.x / 19.x` (Functional Components & Hooks) |
+| Component Library | Material UI (`@mui/material`) | `v6.x` |
+| Icons | Material Icons (`@mui/icons-material`) | `v6.x` |
+| Layout System | MUI Grid | v2 (`size` prop) |
+| State Management | React Context API | `useContext` for global state |
+| Persistence | Web Storage API | Browser `localStorage` |
+| Unique IDs | `uuid` | UUID v4 generator |
+| Styling | Modular CSS + MUI Emotion | Separated component stylesheets |
+| Build Tool | Vite | Fast modern bundler |
 
 ## 📁 Project Structure
 
@@ -145,11 +145,8 @@ taskmate-react-todo/
 
 ### Prerequisites
 
-- **Node.js:** `20.19+` in the 20.x line, or `22.12+` in the 22.x line
-
-- **npm**
-
-Vite 8 requires these Node.js versions; Node.js 18 is not sufficient for this project.
+- **Node.js:** `v18.x` or `v20.x+`
+- **npm:** `v9.x+`
 
 Check the versions installed on your system:
 
