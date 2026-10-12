@@ -1,6 +1,6 @@
 
 
-/* Main White Card Container */
+/* Task list card */
 .todo-card {
   background-color: #ffffff !important;
   border-radius: 8px !important;
@@ -10,7 +10,7 @@
   overflow-y: auto !important;  /* Enables smooth vertical scrolling */
 }
 
-/* Header Title */
+/* Page title */
 .todo-title {
   font-weight: 700 !important;
   text-align: center;
@@ -18,7 +18,7 @@
   margin-bottom: 15px !important;
 }
 
-/* Filter Buttons Wrapper */
+/* Task filter buttons */
 .filter-buttons-group {
   display: flex !important;
   justify-content: center;
@@ -28,27 +28,21 @@
   direction: ltr;
 }
 
-/* Inner Container for Todo Items */
+/* Task list */
 .todos-container {
   margin-top: 15px;
 }
 
-/* ==========================================================================
-   Add Todo Input & Button Section
-   ========================================================================== */
-
-/* Container Grid for Input and Add Button */
+/* Add task form */
 .add-todo-grid-container {
   margin-top: 20px !important; /* Space separating tasks from input */
   align-items: stretch;        /* Ensures input and button have matching height */
 }
 
-/* Full Width Text Field */
 .add-todo-input {
   width: 100% !important;
 }
 
-/* Add Button Styling */
 .add-todo-btn {
   width: 100% !important;
   height: 100% !important; /* Matches TextField height */

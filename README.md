@@ -70,24 +70,30 @@ The application reads any saved task list from `localStorage` at startup. Adding
 
 - Grid-based task layout and action buttons for task completion, editing, and deletion.
 
+### 5. Toast Notifications
+
+Success notifications appear after adding, editing, deleting, or completing a task. The notification is displayed at the bottom-left of the screen and closes automatically after two seconds.
+
 ## 🧠 Architecture & State Management
 
-The task array is created and managed in `App.jsx`. `TodosContext` makes both the array and its updater available to the task list and task-item components.
+The task array is created and managed in `App.jsx`. `TodosContext` makes both the array and its updater available to the task list and task-item components. `ToastContext` provides a notification function to those components, while `MySnackBar.jsx` displays the resulting message.
 
 ```
-                    App.jsx
-          (shared tasks state and provider)
-                       │
-                 TodosContext
-                       │
-             ┌─────────┴─────────┐
-             │                   │
-        TodoList.jsx          Todo.jsx
-    (filters and add)   (edit, complete,
-                             and delete)
+                         App.jsx
+          (task state, toast state, and providers)
+                  ┌──────┴──────┐
+                  │             │
+            TodosContext   ToastContext
+                  │             │
+             ┌────┴─────┐       │
+             │          │       │
+        TodoList.jsx  Todo.jsx  MySnackBar.jsx
+        (filter/add) (task actions) (toast display)
 ```
 
 - **Single source of truth:** The shared task array lives in `App.jsx`.
+
+- **Shared notifications:** `ToastContext` makes the toast function available to components that handle task actions.
 
 - **Derived filtering:** Completed and incomplete lists are calculated from the shared array.
 
@@ -124,11 +130,13 @@ taskmate-react-todo/
 ├── src/
 │   ├── assets/
 │   ├── Components/
+│   │   ├── MySnackBar.jsx       # Toast notification display
 │   │   ├── Todo.jsx            # Individual task card and dialogs
 │   │   ├── Todo.css            # Task card styles
 │   │   ├── TodoList.jsx        # Task list, filters, and add-task form
 │   │   └── TodoList.css        # List and card styles
 │   ├── Contexts/
+│   │   ├── ToastContext.jsx     # Shared toast notification function
 │   │   └── TempContext.jsx     # Shared task context
 │   ├── App.jsx                 # Root component, theme, and task state
 │   ├── App.css                 # Font setup and application layout
@@ -198,6 +206,8 @@ npm run preview
 
 - **Shared state:** `TodosContext` exposes the task array and updater to child components.
 
+- **Context-based notifications:** `ToastContext` exposes the toast function; `MySnackBar.jsx` renders success messages after task actions.
+
 - **Derived filtering:** The selected filter determines which tasks are rendered without maintaining duplicate filtered state.
 
 - **Side effects:** `useEffect` reads saved tasks from browser storage when the task list mounts.
@@ -211,8 +221,6 @@ npm run preview
 - Task priorities (High, Medium, Low ).
 
 - Due dates and calendar selection.
-
-- Toast notifications after task actions.
 
 - Light and dark theme toggle.
 

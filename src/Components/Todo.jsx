@@ -1,13 +1,10 @@
-// React Hooks Import
 import { useState, useContext } from "react";
 
-// Custom CSS Import
 import "./Todo.css";
 
-// Context Import
 import { TodosContext } from "../Contexts/TempContext";
+import { ToastContext } from "../Contexts/ToastContext";
 
-// Material UI Layout & Form Components
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -16,37 +13,31 @@ import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
-// Material UI Dialog Components
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-// Material UI Action Icons
 import CheckIcon from "@mui/icons-material/Check";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 export default function Todo({ todo }) {
-  // Consume global state and updater function from Context
   const { todos, setTodos } = useContext(TodosContext);
+  const showToast = useContext(ToastContext);
 
-  // 1. Local State: Visibility of Delete Dialog
+  // Control whether the delete dialog is open
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  // 2. Local State: Visibility of Update Dialog
+  // Control whether the edit dialog is open
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
 
-  // 3. Local State: Holding Temporary Form Values for Editing
+  // Keep the edited values before saving
   const [updatedTodo, setUpdatedTodo] = useState({
     title: todo.title,
     details: todo.details,
   });
-
-  // =========================================================================
-  // Event Handlers
-  // =========================================================================
 
   function handleDeleteClick() {
     setShowDeleteDialog(true);
@@ -68,7 +59,7 @@ export default function Todo({ todo }) {
     setShowUpdateDialog(false);
   }
 
-  // A. Toggle Task Completion
+  // Mark the task as complete or incomplete
   function handleCheckClick() {
     const updatedTodos = todos.map((t) => {
       if (t.id === todo.id) {
@@ -81,20 +72,21 @@ export default function Todo({ todo }) {
     });
 
     setTodos(updatedTodos);
-    // Sync with localStorage
+    // Save the updated list
     localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    showToast(todo.isCompleted ? "تم إلغاء إنجاز المهمة" : "تم إنجاز المهمة");
   }
 
-  // B. Confirm Delete Action
+  // Delete the task and save the updated list
   function handleDeleteConfirm() {
     const updatedTodos = todos.filter((t) => t.id !== todo.id);
 
     setTodos(updatedTodos);
-    // Sync with localStorage
     localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    showToast("تم حذف المهمة بنجاح");
   }
 
-  // C. Confirm Update Action
+  // Save the edited task
   function handleUpdateConfirm() {
     const updatedTodos = todos.map((t) => {
       if (t.id === todo.id) {
@@ -108,17 +100,15 @@ export default function Todo({ todo }) {
     });
 
     setTodos(updatedTodos);
-    // Sync with localStorage
     localStorage.setItem("todos", JSON.stringify(updatedTodos));
 
     setShowUpdateDialog(false);
+    showToast("تم تعديل المهمة بنجاح");
   }
 
   return (
     <>
-      {/* ================================================================
-          1. Delete Confirmation Dialog
-          ================================================================ */}
+      {/* Ask before deleting the task */}
       <Dialog
         dir="rtl"
         open={showDeleteDialog}
@@ -141,9 +131,7 @@ export default function Todo({ todo }) {
         </DialogActions>
       </Dialog>
 
-      {/* ================================================================
-          2. Edit / Update Todo Dialog
-          ================================================================ */}
+      {/* Edit the task details */}
       <Dialog
         dir="rtl"
         open={showUpdateDialog}
@@ -152,7 +140,6 @@ export default function Todo({ todo }) {
       >
         <DialogTitle id="update-dialog-title">تعديل مهمة</DialogTitle>
         <DialogContent>
-          {/* Title Input */}
           <TextField
             autoFocus
             margin="dense"
@@ -165,7 +152,6 @@ export default function Todo({ todo }) {
             }}
           />
 
-          {/* Details Input */}
           <TextField
             margin="dense"
             label="التفاصيل"
@@ -185,15 +171,11 @@ export default function Todo({ todo }) {
         </DialogActions>
       </Dialog>
 
-      {/* ================================================================
-          3. Single Todo Item Card
-          ================================================================ */}
+      {/* Show the task and its actions */}
       <Card className="todo-card-item">
         <CardContent>
           <Grid container spacing={2}>
-            {/* Content Column (8 Columns out of 12) */}
             <Grid size={8} className="todo-content-col">
-              {/* Task Title Typography with Conditional Strikethrough */}
               <Typography
                 variant="h5"
                 className={`todo-title-text ${todo.isCompleted ? "completed" : ""}`}
@@ -205,9 +187,7 @@ export default function Todo({ todo }) {
               </Typography>
             </Grid>
 
-            {/* Actions Column (4 Columns out of 12) */}
             <Grid size={4} className="todo-actions-col">
-              {/* Check / Complete Button */}
               <IconButton
                 className={`action-icon-btn check-btn ${todo.isCompleted ? "completed" : ""}`}
                 aria-label="mark as completed"
@@ -216,7 +196,6 @@ export default function Todo({ todo }) {
                 <CheckIcon />
               </IconButton>
 
-              {/* Edit Button (Triggers Edit Dialog) */}
               <IconButton
                 className="action-icon-btn edit-btn"
                 aria-label="edit task"
@@ -225,7 +204,6 @@ export default function Todo({ todo }) {
                 <ModeEditOutlineOutlinedIcon />
               </IconButton>
 
-              {/* Delete Button (Triggers Delete Dialog) */}
               <IconButton
                 className="action-icon-btn delete-btn"
                 aria-label="delete task"

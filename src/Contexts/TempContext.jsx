@@ -1,5 +1,4 @@
-// React Core Import
 import { createContext } from "react";
 
-// Create and export the Context with a default empty array
+// Share the task list with child components
 export const TodosContext = createContext([]);

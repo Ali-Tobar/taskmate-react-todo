@@ -1,8 +1,4 @@
-/* ==========================================================================
-   Custom Font Setup (@font-face)
-   ========================================================================== */
-
-/* Regular Font Weight (400) */
+/* Load the regular Alexandria font */
 @font-face {
   font-family: 'Alexandria';
   src: url('/fonts/Alexandria-Regular.ttf') format('truetype');
@@ -10,7 +6,7 @@
   font-style: normal;
 }
 
-/* Bold Weight (700) */
+/* Load the bold Alexandria font */
 @font-face {
   font-family: 'Alexandria';
   src: url('/fonts/Alexandria-Bold.ttf') format('truetype');

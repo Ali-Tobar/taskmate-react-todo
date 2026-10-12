@@ -1,22 +1,19 @@
-// React Core & Hooks Import
 import  { useState } from 'react';
 
-// External Libraries (Unique ID Generator)
 import { v4 as uuidv4 } from 'uuid';
 
-// Styles Import
 import './App.css';
 
-// Material UI Theming
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// Context Import
 import { TodosContext } from './Contexts/TempContext';
+import { ToastContext } from './Contexts/ToastContext';
 
-// Child Components
 import TodoList from './Components/TodoList';
 
-// 1. Initial Mock Todos Array
+import MySnackBar from "./Components/MySnackBar";
+
+// Sample tasks shown when there are no saved tasks
 const initialTodos = [
   {
     id: uuidv4(),
@@ -38,7 +35,7 @@ const initialTodos = [
   },
 ];
 
-// Custom Theme with Typography & Primary Color Palette
+// Set the app font and main color
 const theme = createTheme({
   typography: {
     fontFamily: ['Alexandria', 'sans-serif'].join(','),
@@ -51,17 +48,30 @@ const theme = createTheme({
 });
 
 export default function App() {
-  // Global State for Todos and updater function
+  // Keep the task list and toast message in shared state
   const [todos, setTodos] = useState(initialTodos);
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
+  function showHideToast(msg) {
+    setMessage(msg);
+    setOpen(true);
+
+    setTimeout(() => {
+      setOpen(false);
+    }, 2000);
+  }
   return (
     <ThemeProvider theme={theme}>
-      {/* 3. Provide both the data (todos) and the updater (setTodos) to the whole tree */}
-      <TodosContext.Provider value={{ todos, setTodos }}>
-        <div className="App">
-          <TodoList />
-        </div>
-      </TodosContext.Provider>
+      <ToastContext.Provider value={showHideToast}>
+        <MySnackBar open={open} message={message} />
+        {/* Share the task list with the task components */}
+        <TodosContext.Provider value={{ todos, setTodos }}>
+          <div className="App">
+            <TodoList />
+          </div>
+        </TodosContext.Provider>
+      </ToastContext.Provider>
     </ThemeProvider>
   );
 }

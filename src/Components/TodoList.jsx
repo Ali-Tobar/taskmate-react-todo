@@ -1,16 +1,12 @@
-// React Core & Hooks Import
 import { useState, useContext, useEffect } from "react";
 
-// Custom CSS Import
 import "./TodoList.css";
 
-// External Libraries
 import { v4 as uuidv4 } from "uuid";
 
-// Context Import
 import { TodosContext } from "../Contexts/TempContext";
+import { ToastContext } from "../Contexts/ToastContext";
 
-// Material UI Components
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -22,19 +18,17 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-// Child Components
 import Todo from "./Todo";
 
 export default function TodoList() {
   const { todos, setTodos } = useContext(TodosContext);
+  const showToast = useContext(ToastContext);
   const [titleInput, setTitleInput] = useState("");
 
-  // 1. State for managing the active filter button type ('all' | 'completed' | 'non-completed')
+  // Remember which tasks the user wants to see
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
 
-  // =========================================================================
-  // Lifecycle: Retrieve stored todos on initial mount
-  // =========================================================================
+  // Load saved tasks when the list opens
   useEffect(() => {
     const storageTodos = JSON.parse(localStorage.getItem("todos"));
     if (storageTodos) {
@@ -42,13 +36,10 @@ export default function TodoList() {
     }
   }, [setTodos]);
 
-  // =========================================================================
-  // Computed Arrays (Derived State - No storage or setState needed)
-  // =========================================================================
+  // Separate completed and incomplete tasks for filtering
   const completedTodos = todos.filter((t) => t.isCompleted);
   const nonCompletedTodos = todos.filter((t) => !t.isCompleted);
 
-  // Determine which array to render based on the active filter state
   let todosToBeRendered = todos;
 
   if (displayedTodosType === "completed") {
@@ -57,16 +48,11 @@ export default function TodoList() {
     todosToBeRendered = nonCompletedTodos;
   }
 
-  // =========================================================================
-  // Event Handlers
-  // =========================================================================
-
-  // Change filter type when user clicks on a ToggleButton
+  // Update the selected filter
   function changeDisplayedType(e) {
     setDisplayedTodosType(e.target.value);
   }
 
-  // Adding a new Todo
   function handleAddClick() {
     if (titleInput.trim() === "") return;
 
@@ -82,9 +68,10 @@ export default function TodoList() {
 
     localStorage.setItem("todos", JSON.stringify(updatedTodos));
     setTitleInput("");
+    // Show a message after adding a task
+    showToast("تمت إضافة المهمة بنجاح");
   }
 
-  // Dynamic JSX generation from the computed array
   const todosJSX = todosToBeRendered.map((todo) => {
     return <Todo key={todo.id} todo={todo} />;
   });
@@ -99,10 +86,6 @@ export default function TodoList() {
 
           <Divider />
 
-          {/* ================================================================
-              Filter Controls (Controlled ToggleButtonGroup)
-              ================================================================ */}
-          {/* Filter Controls with Primary Theme Color */}
           <ToggleButtonGroup
             exclusive
             color="primary"
@@ -116,10 +99,8 @@ export default function TodoList() {
             <ToggleButton value="all">الكل</ToggleButton>
           </ToggleButtonGroup>
 
-          {/* Dynamic Render of Filtered Todos */}
           <div className="todos-container">{todosJSX}</div>
 
-          {/* Input + Add Button Section */}
           <Grid container spacing={2} className="add-todo-grid-container">
             <Grid size={8}>
               <TextField
@@ -132,7 +113,6 @@ export default function TodoList() {
               />
             </Grid>
 
-            {/* Submit Button (Disabled when input is empty) */}
             <Grid size={4}>
               <Button
                 variant="contained"
