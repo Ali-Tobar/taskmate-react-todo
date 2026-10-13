@@ -24,7 +24,7 @@ import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutl
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 export default function Todo({ todo }) {
-  const { todos, setTodos } = useContext(TodosContext);
+  const { dispatch } = useContext(TodosContext);
   const showToast = useContext(ToastContext);
 
   // Control whether the delete dialog is open
@@ -61,47 +61,40 @@ export default function Todo({ todo }) {
 
   // Mark the task as complete or incomplete
   function handleCheckClick() {
-    const updatedTodos = todos.map((t) => {
-      if (t.id === todo.id) {
-        return {
-          ...t,
-          isCompleted: !t.isCompleted,
-        };
-      }
-      return t;
+    // Send an action to the reducer to toggle the task's completion status.
+    dispatch({
+      type: "toggled",
+      payload: {
+        id: todo.id,
+      },
     });
-
-    setTodos(updatedTodos);
-    // Save the updated list
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
     showToast(todo.isCompleted ? "تم إلغاء إنجاز المهمة" : "تم إنجاز المهمة");
   }
 
   // Delete the task and save the updated list
   function handleDeleteConfirm() {
-    const updatedTodos = todos.filter((t) => t.id !== todo.id);
-
-    setTodos(updatedTodos);
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    // Send an action to the reducer to delete the task.
+    dispatch({
+      type: "deleted",
+      payload: {
+        id: todo.id,
+      },
+    });
+    setShowDeleteDialog(false);
     showToast("تم حذف المهمة بنجاح");
   }
 
   // Save the edited task
   function handleUpdateConfirm() {
-    const updatedTodos = todos.map((t) => {
-      if (t.id === todo.id) {
-        return {
-          ...t,
-          title: updatedTodo.title,
-          details: updatedTodo.details,
-        };
-      }
-      return t;
+    // Send the changes to the reducer to update the task.
+    dispatch({
+      type: "edited",
+      payload: {
+        id: todo.id,
+        title: updatedTodo.title,
+        details: updatedTodo.details,
+      },
     });
-
-    setTodos(updatedTodos);
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
-
     setShowUpdateDialog(false);
     showToast("تم تعديل المهمة بنجاح");
   }

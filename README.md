@@ -2,7 +2,7 @@
 
 ### A feature-rich, RTL-friendly task manager for Arabic-speaking users
 
-TaskMate is a task management web application built with **React**, **Material UI (MUI)**, and the **Context API**. It provides a clean Arabic interface for creating, viewing, editing, completing, filtering, and deleting tasks. Task changes are stored locally in the browser.
+TaskMate is a task management web application built with **React**, **Material UI (MUI)**, the **Context API**, and **`useReducer`**. It provides a clean Arabic interface for creating, viewing, editing, completing, filtering, and deleting tasks. Task changes are stored locally in the browser.
 
 ---
 
@@ -32,7 +32,7 @@ TaskMate is a task management web application built with **React**, **Material U
 
 **TaskMate** is designed for Arabic-speaking users who want a simple way to organize everyday tasks. The interface supports **right-to-left (RTL)** layout and uses the locally bundled **Alexandria** font.
 
-The application keeps its task list in React state and shares it with child components through the **Context API**. Task changes are saved in the browser's `localStorage` and restored when the app starts.
+The application manages its task list with **`useReducer`** and shares the list and `dispatch` function with child components through the **Context API**. Task changes are saved in the browser's `localStorage` and restored when the app starts.
 
 > **Storage note:** Tasks are stored only in the current browser's local storage. The project does not include a backend, user accounts, or cross-device synchronization. Clearing site data or switching browsers/devices will not transfer saved tasks.
 
@@ -56,7 +56,7 @@ Filter tasks by **All (الكل)**, **Completed (المنجز)**, or **Incomplet
 
 ### 3. Local Data Persistence
 
-The application reads any saved task list from `localStorage` at startup. Adding, editing, completing, or deleting a task updates the saved list. If no task list has been saved, the application displays the sample tasks defined in `App.jsx`.
+The application reads any saved task list from `localStorage` at startup. Adding, editing, completing, or deleting a task updates the reducer state, and the updated list is saved to `localStorage`. If no task list has been saved, the application displays the sample tasks defined in `App.jsx`.
 
 ### 4. UI and RTL Support
 
@@ -76,22 +76,34 @@ Success notifications appear after adding, editing, deleting, or completing a ta
 
 ## 🧠 Architecture & State Management
 
-The task array is created and managed in `App.jsx`. `TodosContext` makes both the array and its updater available to the task list and task-item components. `ToastContext` provides a notification function to those components, while `MySnackBar.jsx` displays the resulting message.
+The task array is managed in `App.jsx` with `useReducer` and `TodosReducer.jsx`. Components send actions with `dispatch`; the reducer returns a new task array for each action. `TodosContext` makes the array and `dispatch` function available to the task list and task-item components. `ToastContext` provides a notification function to those components, while `MySnackBar.jsx` displays the resulting message.
 
 ```
-                         App.jsx
-          (task state, toast state, and providers)
-                  ┌──────┴──────┐
-                  │             │
-            TodosContext   ToastContext
-                  │             │
-             ┌────┴─────┐       │
-             │          │       │
-        TodoList.jsx  Todo.jsx  MySnackBar.jsx
-        (filter/add) (task actions) (toast display)
+                          App.jsx
+           (useReducer state, persistence, providers)
+                       │
+                 TodosContext
+                 (todos, dispatch)
+                       │
+                ┌──────┴──────┐
+                │             │
+           TodoList.jsx    Todo.jsx
+           (filter/add)  (task actions)
+                │             │
+                └──────┬──────┘
+                       │ dispatch(action)
+                 TodosReducer.jsx
+                       │
+                 updated task list
+
+            ToastContext ── MySnackBar.jsx
 ```
 
 - **Single source of truth:** The shared task array lives in `App.jsx`.
+
+- **Reducer-based updates:** Adding, editing, deleting, and toggling tasks are handled by actions in `TodosReducer.jsx`. The reducer calculates and returns the next task array.
+
+- **Persistence:** `App.jsx` loads saved tasks when initializing the reducer and saves the list whenever it changes.
 
 - **Shared notifications:** `ToastContext` makes the toast function available to components that handle task actions.
 
@@ -110,7 +122,7 @@ The versions below are resolved versions recorded in `package-lock.json` at the 
 | Component Library | Material UI (`@mui/material`) | `v6.x` |
 | Icons | Material Icons (`@mui/icons-material`) | `v6.x` |
 | Layout System | MUI Grid | v2 (`size` prop) |
-| State Management | React Context API | `useContext` for global state |
+| State Management | React Hooks + Context API | `useReducer` for task updates; `useContext` to share state and `dispatch` |
 | Persistence | Web Storage API | Browser `localStorage` |
 | Unique IDs | `uuid` | UUID v4 generator |
 | Styling | Modular CSS + MUI Emotion | Separated component stylesheets |
@@ -137,7 +149,9 @@ taskmate-react-todo/
 │   │   └── TodoList.css        # List and card styles
 │   ├── Contexts/
 │   │   ├── ToastContext.jsx     # Shared toast notification function
-│   │   └── TempContext.jsx     # Shared task context
+│   │   └── TempContext.jsx      # Shared task state and dispatch
+│   ├── Reducers/
+│   │   └── TodosReducer.jsx     # Reducer actions for task updates
 │   ├── App.jsx                 # Root component, theme, and task state
 │   ├── App.css                 # Font setup and application layout
 │   ├── index.css               # Global CSS reset
@@ -201,15 +215,17 @@ npm run preview
 
 - **Immutable state updates:** Task arrays are updated with methods such as `map` and `filter` rather than direct mutation.
 
-- **Shared state:** `TodosContext` exposes the task array and updater to child components.
+- **Reducer state management:** `useReducer` manages the task list. Components dispatch actions for adding, editing, deleting, and toggling tasks; `TodosReducer.jsx` returns the updated list.
+
+- **Shared state:** `TodosContext` exposes the task array and `dispatch` function to child components.
 
 - **Context-based notifications:** `ToastContext` exposes the toast function; `MySnackBar.jsx` renders success messages after task actions.
 
 - **Derived filtering:** The selected filter determines which tasks are rendered without maintaining duplicate filtered state.
 
-- **Side effects:** `useEffect` reads saved tasks from browser storage when the task list mounts.
+- **Initialization and side effects:** Saved tasks are loaded when the reducer state is initialized, and `useEffect` saves changes to browser storage.
 
-- **Persistence:** Task actions write the updated array to `localStorage`.
+- **Pure reducer updates:** The reducer only calculates and returns task state; browser storage is handled separately in `App.jsx`.
 
 - **Dialog lifecycle:** Material UI dialogs manage task editing and delete confirmation.
 

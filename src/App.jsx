@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,6 +8,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { TodosContext } from './Contexts/TempContext';
 import { ToastContext } from './Contexts/ToastContext';
+import todosReducer from './Reducers/TodosReducer';
 
 import TodoList from './Components/TodoList';
 
@@ -47,11 +48,22 @@ const theme = createTheme({
   },
 });
 
+// Load saved tasks, or use the default tasks on the first run.
+function getInitialTodos() {
+  const savedTodos = JSON.parse(localStorage.getItem('todos'));
+  return savedTodos || initialTodos;
+}
+
 export default function App() {
-  // Keep the task list and toast message in shared state
-  const [todos, setTodos] = useState(initialTodos);
+  // useReducer manages the task list, and dispatch sends actions to it.
+  const [todos, dispatch] = useReducer(todosReducer, initialTodos, getInitialTodos);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Save the tasks whenever the list changes.
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
 
   function showHideToast(msg) {
     setMessage(msg);
@@ -65,8 +77,8 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <ToastContext.Provider value={showHideToast}>
         <MySnackBar open={open} message={message} />
-        {/* Share the task list with the task components */}
-        <TodosContext.Provider value={{ todos, setTodos }}>
+        {/* Share the task list and dispatch with the components. */}
+        <TodosContext.Provider value={{ todos, dispatch }}>
           <div className="App">
             <TodoList />
           </div>

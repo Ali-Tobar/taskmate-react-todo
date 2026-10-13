@@ -1,8 +1,6 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 
 import "./TodoList.css";
-
-import { v4 as uuidv4 } from "uuid";
 
 import { TodosContext } from "../Contexts/TempContext";
 import { ToastContext } from "../Contexts/ToastContext";
@@ -17,24 +15,15 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-
 import Todo from "./Todo";
 
 export default function TodoList() {
-  const { todos, setTodos } = useContext(TodosContext);
+  const { todos, dispatch } = useContext(TodosContext);
   const showToast = useContext(ToastContext);
   const [titleInput, setTitleInput] = useState("");
 
   // Remember which tasks the user wants to see
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
-
-  // Load saved tasks when the list opens
-  useEffect(() => {
-    const storageTodos = JSON.parse(localStorage.getItem("todos"));
-    if (storageTodos) {
-      setTodos(storageTodos);
-    }
-  }, [setTodos]);
 
   // Separate completed and incomplete tasks for filtering
   const completedTodos = todos.filter((t) => t.isCompleted);
@@ -53,22 +42,15 @@ export default function TodoList() {
     setDisplayedTodosType(e.target.value);
   }
 
+  // Send an action to the reducer to add a new task.
   function handleAddClick() {
-    if (titleInput.trim() === "") return;
-
-    const newTodo = {
-      id: uuidv4(),
-      title: titleInput,
-      details: "",
-      isCompleted: false,
-    };
-
-    const updatedTodos = [...todos, newTodo];
-    setTodos(updatedTodos);
-
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    dispatch({
+      type: "added",
+      payload: {
+        newTitle: titleInput,
+      },
+    });
     setTitleInput("");
-    // Show a message after adding a task
     showToast("تمت إضافة المهمة بنجاح");
   }
 
